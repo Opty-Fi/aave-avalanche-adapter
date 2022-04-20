@@ -2,7 +2,7 @@ import { task, types } from "hardhat/config";
 import { utils } from "ethers";
 import { AaveAvaV2Adapter, AaveAvaV2Adapter__factory } from "../../typechain";
 
-task("deploy-aave.finance-adapter", "Deploy Aave Adapter")
+task("deploy-aavev2.finance-adapter", "Deploy Aave V2 Adapter")
   .addParam("registry", "the address of registry", "", types.string)
   .setAction(async ({ registry }, { ethers }) => {
     if (registry === "") {
