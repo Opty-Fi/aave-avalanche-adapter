@@ -29,6 +29,7 @@ import { IAdapter } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/I
 import { IAdapterHarvestReward } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapterHarvestReward.sol";
 import "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapterInvestLimit.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Adapter for Aave V3 protocol
@@ -210,9 +211,9 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     function getUnclaimedRewardTokenAmount(
         address payable _vault,
         address,
-        address _underlyingToken
+        address _reward
     ) public view override returns (uint256 _codes) {
-        return IAaveV3RewardsController(incentivesController).getUserAccruedRewards(_vault, _underlyingToken);
+        return IAaveV3RewardsController(incentivesController).getUserAccruedRewards(_vault, _reward);
     }
 
     /**
@@ -244,7 +245,7 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
      * @inheritdoc IAdapter
      */
     function getUnderlyingTokens(address, address _liquidityPoolToken)
-        external
+        public
         view
         override
         returns (address[] memory _underlyingTokens)
@@ -310,7 +311,7 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     /**
      * @inheritdoc IAdapterHarvestReward
      */
-    function getClaimRewardTokenCode(address payable _vault, address)
+    function getClaimRewardTokenCode(address payable _vault, address _liquidityPool)
         external
         view
         override
@@ -318,19 +319,24 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     {
         address[] memory rewards = getRewardTokens();
         _codes = new bytes[](rewards.length);
-        for (uint256 i; i < rewards.length; i++) {
-            uint256 _amount =
-                getUnclaimedRewardTokenAmount(_vault, address(0), IAaveV3Token(rewards[i]).UNDERLYING_ASSET_ADDRESS());
-            address[] memory _assets;
-
-            _codes[i] = abi.encode(
+        address[] memory _assets =
+            getUnderlyingTokens(
+                address(0),
+                getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry)
+            );
+        console.log(rewards.length);
+        console.logAddress(rewards[0]);
+        for (uint256 _i; _i < rewards.length; _i++) {
+            uint256 _amount = getUnclaimedRewardTokenAmount(_vault, address(0), rewards[_i]);
+            console.log("amount", _amount);
+            _codes[_i] = abi.encode(
                 incentivesController,
                 abi.encodeWithSignature(
                     "claimRewards(address[],uint256,address,address)",
                     _assets,
                     _amount,
                     _vault,
-                    rewards[i]
+                    rewards[_i]
                 )
             );
         }

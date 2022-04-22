@@ -4,19 +4,28 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ERC20 } from "../typechain";
 
 export const CONTRACTS = {
-  IAaveLendingPoolAddressesProviderRegistryV2:
+  IAaveV2LendingPoolAddressesProviderRegistry:
     "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProviderRegistry.sol:IAaveLendingPoolAddressesProviderRegistry",
+  IAaveV3endingPoolAddressesProviderRegistry:
+    "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3LendingPoolAddressesProviderRegistry.sol:IAaveV3LendingPoolAddressesProviderRegistry",
   IAdapterRegistryBase: "IAdapterRegistryBase",
   TestDeFiAdapter: "TestDeFiAdapter",
   AaveAvaV2Adapter: "AaveAvaV2Adapter",
   ERC20: "ERC20",
   IAaveIncentivesController:
     "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveIncentivesController.sol:IAaveIncentivesController",
-  IAaveLendingPoolAddressesProviderV2:
+  IAaveV2LendingPoolAddressesProvider:
     "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProvider.sol:IAaveLendingPoolAddressesProvider",
-  IAaveProtocolDataProvider:
+  IAaveV2ProtocolDataProvider:
     "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveProtocolDataProvider.sol:IAaveProtocolDataProvider",
   IAaveV2: "@optyfi/defi-legos/avalanche/aavev2/contracts/IAave.sol:IAave",
+  IAaveV3RewardsController:
+    "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3RewardsController.sol:IAaveV3RewardsController",
+  IAaveV3LendingPoolAddressesProvider:
+    "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3LendingPoolAddressesProvider.sol:IAaveV3LendingPoolAddressesProvider",
+  IAaveV3ProtocolDataProvider:
+    "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3ProtocolDataProvider.sol:IAaveV3ProtocolDataProvider",
+  IAaveV3: "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3.sol:IAaveV3",
 };
 export function getOverrideOptions(): TransactionRequest {
   return {

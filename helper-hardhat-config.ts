@@ -28,7 +28,7 @@ export const NETWORKS_CHAIN_ID: iAvalancheParamsPerNetwork<number> = {
 };
 
 export const BLOCK_TO_FORK = {
-  [eAvalancheNetwork.avalanche]: 13595010,
+  [eAvalancheNetwork.avalanche]: 13734457,
   [eAvalancheNetwork.fuji]: 8694985,
 };
 

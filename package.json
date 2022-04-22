@@ -83,7 +83,7 @@
     "postinstall": "husky install",
     "prettier": "prettier --config ./.prettierrc.yaml --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc.yaml \"**/*.{js,json,md,sol,ts}\"",
-    "test:avalanche:fork": "cross-env FORK=avalanche NETWORK=avalanche TS_NODE_TRANSPILE_ONLY=1 hardhat --max-memory 4096 test ./test/*.ts",
+    "test:avalanche:fork": "cross-env FORK=avalanche NETWORK=avalanche TS_NODE_TRANSPILE_ONLY=1 hardhat --max-memory 4096 test ./test/AaveV3Adapter.ts",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat --max-memory 4096 typechain"
   },
   "contributors": [
