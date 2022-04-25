@@ -83,7 +83,7 @@
     "postinstall": "husky install",
     "prettier": "prettier --config ./.prettierrc.yaml --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc.yaml \"**/*.{js,json,md,sol,ts}\"",
-    "test:avalanche:fork": "cross-env FORK=avalanche NETWORK=avalanche TS_NODE_TRANSPILE_ONLY=1 hardhat --max-memory 4096 test ./test/AaveV3Adapter.ts",
+    "test:avalanche:fork": "cross-env FORK=avalanche NETWORK=avalanche TS_NODE_TRANSPILE_ONLY=1 hardhat --max-memory 4096 test ./test/*.ts",
     "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat --max-memory 4096 typechain"
   },
   "contributors": [
@@ -98,7 +98,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts-0.8.x": "npm:@openzeppelin/contracts@4.4.1",
-    "@optyfi/defi-legos": "0.1.0-rc.36",
+    "@optyfi/defi-legos": "0.1.0-rc.37",
     "@uniswap/v2-periphery": "^1.1.0-beta.0"
   }
 }
