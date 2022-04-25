@@ -96,7 +96,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
     it("6. canStake() should return false", async function () {
       expect(await this.aaveAdapter.canStake(hre.ethers.constants.AddressZero)).to.be.eq(false);
     });
-    it("7. getRewardToken() should return zero address", async function () {
+    it("7. getRewardToken() should return correct reward token address", async function () {
       expect(await this.aaveAdapter.getRewardToken(hre.ethers.constants.AddressZero)).to.be.eq(
         await incentiveContract.REWARD_TOKEN(),
       );

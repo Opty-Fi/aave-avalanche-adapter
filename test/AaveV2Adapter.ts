@@ -7,7 +7,7 @@ import { LiquidityPool, PoolItem, Signers } from "./types";
 import { shouldBeHaveLikeAaveAdapter } from "./AaveV2Adapter.behavior";
 const { pools }: { pools: LiquidityPool } = AaveAdapterParticulars;
 
-describe("Aave on Polygon", function () {
+describe("Aave V2 on Avalanche", function () {
   before(async function () {
     this.signers = {} as Signers;
     const signers: SignerWithAddress[] = await hre.ethers.getSigners();
@@ -15,8 +15,6 @@ describe("Aave on Polygon", function () {
     this.signers.deployer = signers[2];
     this.signers.operator = signers[8];
     this.signers.riskOperator = signers[9];
-    console.log(signers[9].address);
-
     const registryArtifact: Artifact = await hre.artifacts.readArtifact("IAdapterRegistryBase");
     this.mockRegistry = await hre.waffle.deployMockContract(this.signers.deployer, registryArtifact.abi);
     await this.mockRegistry.mock.getOperator.returns(this.signers.operator.address);

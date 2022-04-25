@@ -7,7 +7,7 @@ import { LiquidityPool, PoolItem, Signers } from "./types";
 import { shouldBeHaveLikeAaveAdapter } from "./AaveV3Adapter.behavior";
 const { pools }: { pools: LiquidityPool } = AaveAdapterParticulars;
 
-describe("Aave on Polygon", function () {
+describe("Aave V3 on Avalanche", function () {
   before(async function () {
     this.signers = {} as Signers;
     const signers: SignerWithAddress[] = await hre.ethers.getSigners();
@@ -31,8 +31,6 @@ describe("Aave on Polygon", function () {
   });
   Object.keys(pools).map((token: string) => {
     const poolItem: PoolItem = pools[token];
-    if (token === "dai") {
-      shouldBeHaveLikeAaveAdapter(token, poolItem);
-    }
+    shouldBeHaveLikeAaveAdapter(token, poolItem);
   });
 });

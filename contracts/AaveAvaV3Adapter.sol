@@ -29,7 +29,6 @@ import { IAdapter } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/I
 import { IAdapterHarvestReward } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapterHarvestReward.sol";
 import "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapterInvestLimit.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
-import "hardhat/console.sol";
 
 /**
  * @title Adapter for Aave V3 protocol
@@ -54,8 +53,24 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     /**@notice incentivesController*/
     address public constant incentivesController = address(0x929EC64c34a17401F460460D4B9390518E5B473e);
 
+    /**
+     * @notice the A tokens list that is used for claiming reward token
+     */
+    address[] public aaveAssetsList;
+
     /* solhint-disable no-empty-blocks */
     constructor(address _registry) AdapterModifiersBase(_registry) {}
+
+    /**
+     * @notice Set Aave assets list to claim reward token.
+     * @param _assets the list of assets
+     */
+    function setAaveAssetsList(address[] memory _assets) external onlyOperator {
+        delete aaveAssetsList;
+        for (uint256 _i; _i < _assets.length; _i++) {
+            aaveAssetsList.push(_assets[_i]);
+        }
+    }
 
     /**
      * @dev AaveV3 allows user to get mutiple reward tokens
@@ -154,7 +169,7 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
             _codes[2] = abi.encode(
                 _lendingPool,
                 abi.encodeWithSignature(
-                    "deposit(address,uint256,address,uint16)",
+                    "supply(address,uint256,address,uint16)",
                     _underlyingToken,
                     _depositAmount,
                     _vault,
@@ -211,9 +226,33 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     function getUnclaimedRewardTokenAmount(
         address payable _vault,
         address,
-        address _reward
-    ) public view override returns (uint256 _codes) {
-        return IAaveV3RewardsController(incentivesController).getUserAccruedRewards(_vault, _reward);
+        address
+    ) public view override returns (uint256 _amount) {
+        if (aaveAssetsList.length > 0) {
+            return (
+                IAaveV3RewardsController(incentivesController).getUserRewards(
+                    aaveAssetsList,
+                    _vault,
+                    getRewardToken(address(0))
+                )
+            );
+        }
+    }
+
+    /**
+     * @notice Get unclaimed reward token amounts
+     * @param _vault the address of vault
+     * @return rewardsList the list of reward tokens
+     * @return unclaimedAmounts the list of unclaimed amounts
+     */
+    function getUnclaimedRewardTokensAmount(address payable _vault)
+        public
+        view
+        returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts)
+    {
+        if (aaveAssetsList.length > 0) {
+            return (IAaveV3RewardsController(incentivesController).getAllUserRewards(aaveAssetsList, _vault));
+        }
     }
 
     /**
@@ -311,33 +350,17 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     /**
      * @inheritdoc IAdapterHarvestReward
      */
-    function getClaimRewardTokenCode(address payable _vault, address _liquidityPool)
+    function getClaimRewardTokenCode(address payable _vault, address)
         external
         view
         override
         returns (bytes[] memory _codes)
     {
-        address[] memory rewards = getRewardTokens();
-        _codes = new bytes[](rewards.length);
-        address[] memory _assets =
-            getUnderlyingTokens(
-                address(0),
-                getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry)
-            );
-        console.log(rewards.length);
-        console.logAddress(rewards[0]);
-        for (uint256 _i; _i < rewards.length; _i++) {
-            uint256 _amount = getUnclaimedRewardTokenAmount(_vault, address(0), rewards[_i]);
-            console.log("amount", _amount);
-            _codes[_i] = abi.encode(
+        if (aaveAssetsList.length > 0) {
+            _codes = new bytes[](1);
+            _codes[0] = abi.encode(
                 incentivesController,
-                abi.encodeWithSignature(
-                    "claimRewards(address[],uint256,address,address)",
-                    _assets,
-                    _amount,
-                    _vault,
-                    rewards[_i]
-                )
+                abi.encodeWithSignature("claimAllRewards(address[],address)", aaveAssetsList, _vault)
             );
         }
     }
