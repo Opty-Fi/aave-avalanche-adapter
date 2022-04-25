@@ -86,9 +86,10 @@ abstract contract AdapterInvestLimitBase is IAdapterInvestLimit, AdapterModifier
         uint256 _amount,
         uint256 _poolValue
     ) internal view returns (uint256) {
-        uint256 _limit = maxDepositProtocolMode == MaxExposure.Pct
-            ? _getMaxDepositAmountPct(_liquidityPool, _poolValue)
-            : maxDepositAmount[_liquidityPool][_underlyingToken];
+        uint256 _limit =
+            maxDepositProtocolMode == MaxExposure.Pct
+                ? _getMaxDepositAmountPct(_liquidityPool, _poolValue)
+                : maxDepositAmount[_liquidityPool][_underlyingToken];
         return _amount > _limit ? _limit : _amount;
     }
 
@@ -101,9 +102,10 @@ abstract contract AdapterInvestLimitBase is IAdapterInvestLimit, AdapterModifier
      */
     function _getMaxDepositAmountPct(address _liquidityPool, uint256 _poolValue) internal view returns (uint256) {
         uint256 _poolPct = maxDepositPoolPct[_liquidityPool];
-        uint256 _limit = _poolPct == 0
-            ? (_poolValue * maxDepositProtocolPct) / uint256(10000)
-            : (_poolValue * _poolPct) / uint256(10000);
+        uint256 _limit =
+            _poolPct == 0
+                ? (_poolValue * maxDepositProtocolPct) / uint256(10000)
+                : (_poolValue * _poolPct) / uint256(10000);
         return _limit;
     }
 }

@@ -13,11 +13,20 @@ import { AdapterModifiersBase } from "./utils/AdapterModifiersBase.sol";
 import "./utils/AdapterInvestLimitBase.sol";
 
 //  interfaces
-import { IAaveLendingPoolAddressesProvider } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProvider.sol";
-import { IAaveLendingPoolAddressesProviderRegistry } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProviderRegistry.sol";
+import {
+    IAaveLendingPoolAddressesProvider
+} from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProvider.sol";
+import {
+    IAaveLendingPoolAddressesProviderRegistry
+} from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveLendingPoolAddressesProviderRegistry.sol";
 import { IAave, ReserveData } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAave.sol";
 import { IAToken } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAToken.sol";
-import { IAaveProtocolDataProvider, UserReserveData, ReserveDataProtocol, ReserveConfigurationData } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveProtocolDataProvider.sol";
+import {
+    IAaveProtocolDataProvider,
+    UserReserveData,
+    ReserveDataProtocol,
+    ReserveConfigurationData
+} from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveProtocolDataProvider.sol";
 import { IAaveIncentivesController } from "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveIncentivesController.sol";
 import { IAdapter } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapter.sol";
 import { IAdapterHarvestReward } from "@optyfi/defi-legos/interfaces/defiAdapters/contracts/IAdapterHarvestReward.sol";
@@ -114,12 +123,13 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         address _liquidityPoolAddressProviderRegistry,
         uint256 _amount
     ) public view override returns (bytes[] memory _codes) {
-        uint256 _depositAmount = _getDepositAmount(
-            _liquidityPoolAddressProviderRegistry,
-            _underlyingToken,
-            _amount,
-            getPoolValue(_liquidityPoolAddressProviderRegistry, _underlyingToken)
-        );
+        uint256 _depositAmount =
+            _getDepositAmount(
+                _liquidityPoolAddressProviderRegistry,
+                _underlyingToken,
+                _amount,
+                getPoolValue(_liquidityPoolAddressProviderRegistry, _underlyingToken)
+            );
         if (_depositAmount > 0) {
             address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
             _codes = new bytes[](3);
@@ -155,10 +165,8 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     ) public view override returns (bytes[] memory _codes) {
         if (_amount > 0) {
             address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
-            address _liquidityPoolToken = getLiquidityPoolToken(
-                _underlyingToken,
-                _liquidityPoolAddressProviderRegistry
-            );
+            address _liquidityPoolToken =
+                getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
             _codes = new bytes[](3);
             _codes[0] = abi.encode(
                 _liquidityPoolToken,
@@ -218,11 +226,8 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         address _underlyingToken,
         address _liquidityPoolAddressProviderRegistry
     ) external view override returns (bytes[] memory) {
-        uint256 _redeemAmount = getLiquidityPoolTokenBalance(
-            _vault,
-            _underlyingToken,
-            _liquidityPoolAddressProviderRegistry
-        );
+        uint256 _redeemAmount =
+            getLiquidityPoolTokenBalance(_vault, _underlyingToken, _liquidityPoolAddressProviderRegistry);
         return getWithdrawSomeCodes(_vault, _underlyingToken, _liquidityPoolAddressProviderRegistry, _redeemAmount);
     }
 
@@ -382,10 +387,11 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         uint256 _rewardTokenAmount
     ) internal view returns (bytes[] memory _codes) {
         if (_rewardTokenAmount > 0) {
-            uint256[] memory _amounts = IUniswapV2Router02(partySwapRouter).getAmountsOut(
-                _rewardTokenAmount,
-                _getPath(_rewardToken, _underlyingToken)
-            );
+            uint256[] memory _amounts =
+                IUniswapV2Router02(partySwapRouter).getAmountsOut(
+                    _rewardTokenAmount,
+                    _getPath(_rewardToken, _underlyingToken)
+                );
             if (_amounts[_amounts.length - 1] > 0) {
                 _codes = new bytes[](3);
                 _codes[0] = abi.encode(
