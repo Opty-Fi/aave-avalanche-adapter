@@ -21,6 +21,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
     let protocolDataProvider: IAaveProtocolDataProvider;
     let lendingPool: IAave;
     let incentiveContract: IAaveIncentivesController;
+    let stopRewardDistribution = false;
     let lpTokenContract: ERC20;
     let rewardTokenContract: ERC20;
     let erc20Contract: ERC20;
@@ -39,7 +40,9 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       incentiveContract = <IAaveIncentivesController>(
         await hre.ethers.getContractAt(CONTRACTS.IAaveIncentivesController, AaveIncentivesController.address)
       );
-
+      if ((await incentiveContract.assets(lpTokenContract.address)).emissionPerSecond.toNumber() === 0) {
+        stopRewardDistribution = true;
+      }
       rewardTokenContract = <ERC20>(
         await hre.ethers.getContractAt(CONTRACTS.ERC20, await incentiveContract.REWARD_TOKEN())
       );
@@ -329,6 +332,9 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       );
     });
     it(`24. Claim all reward token`, async function () {
+      if (stopRewardDistribution) {
+        this.skip();
+      }
       const previousBalance = await rewardTokenContract.balanceOf(this.testDeFiAdapter.address);
 
       await this.testDeFiAdapter.testClaimRewardTokenCode(providerRegistryAddress, this.aaveAdapter.address);
@@ -339,7 +345,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
     });
     it(`25. Harvest all reward token`, async function () {
       //TODO cannot harvest Aave through party swap
-      if (erc20Contract.address === rewardTokenContract.address) {
+      if (erc20Contract.address === rewardTokenContract.address || stopRewardDistribution) {
         this.skip();
       }
       const previousBalance = await erc20Contract.balanceOf(this.testDeFiAdapter.address);
