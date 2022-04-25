@@ -43,9 +43,9 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         0x0100000000000000000000000000000000000000000000000000000000000000;
 
     /**
-     * @notice Party swap router contract address
+     * @notice Trader Joe router contract address
      */
-    address public constant partySwapRouter = address(0xff164Ede3E7C375E8764E9e3a22D3E35F780EEBC);
+    address public constant traderJoeRouter = address(0x60aE616a2155Ee3d9A68541Ba4544862310933d4);
 
     /**@notice PoS WAVAX */
     address public constant WAVAX = address(0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7);
@@ -426,7 +426,7 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     ) internal view returns (bytes[] memory _codes) {
         if (_rewardTokenAmount > 0) {
             uint256[] memory _amounts =
-                IUniswapV2Router02(partySwapRouter).getAmountsOut(
+                IUniswapV2Router02(traderJoeRouter).getAmountsOut(
                     _rewardTokenAmount,
                     _getPath(_rewardToken, _underlyingToken)
                 );
@@ -434,16 +434,16 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
                 _codes = new bytes[](3);
                 _codes[0] = abi.encode(
                     _rewardToken,
-                    abi.encodeCall(ERC20(_rewardToken).approve, (partySwapRouter, uint256(0)))
+                    abi.encodeCall(ERC20(_rewardToken).approve, (traderJoeRouter, uint256(0)))
                 );
                 _codes[1] = abi.encode(
                     _rewardToken,
-                    abi.encodeCall(ERC20(_rewardToken).approve, (partySwapRouter, _rewardTokenAmount))
+                    abi.encodeCall(ERC20(_rewardToken).approve, (traderJoeRouter, _rewardTokenAmount))
                 );
                 _codes[2] = abi.encode(
-                    partySwapRouter,
+                    traderJoeRouter,
                     abi.encodeCall(
-                        IUniswapV2Router01(partySwapRouter).swapExactTokensForTokens,
+                        IUniswapV2Router01(traderJoeRouter).swapExactTokensForTokens,
                         (
                             _rewardTokenAmount,
                             uint256(0),
