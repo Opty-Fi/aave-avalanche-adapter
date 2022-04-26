@@ -10,7 +10,7 @@ export const CONTRACTS = {
     "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3LendingPoolAddressesProviderRegistry.sol:IAaveV3LendingPoolAddressesProviderRegistry",
   IAdapterRegistryBase: "IAdapterRegistryBase",
   TestDeFiAdapter: "TestDeFiAdapter",
-  AaveAvaV2Adapter: "AaveAvaV2Adapter",
+  AaveAvaV2Adapter: "AaveV2AvalancheAdapter",
   ERC20: "ERC20",
   IAaveIncentivesController:
     "@optyfi/defi-legos/avalanche/aavev2/contracts/IAaveIncentivesController.sol:IAaveIncentivesController",

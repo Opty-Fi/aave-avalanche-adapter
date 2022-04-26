@@ -35,7 +35,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
  * @author Opty.fi
  * @dev Abstraction layer to Aave's pools
  */
-contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimitBase {
+contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimitBase {
     using Address for address;
 
     /** @notice Aave's Data provider id */
@@ -59,7 +59,16 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
     address[] public aaveAssetsList;
 
     /* solhint-disable no-empty-blocks */
-    constructor(address _registry) AdapterModifiersBase(_registry) {}
+    constructor(address _registry) AdapterModifiersBase(_registry) {
+        aaveAssetsList.push(address(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE)); //ADai
+        aaveAssetsList.push(address(0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530)); //ALINK
+        aaveAssetsList.push(address(0x625E7708f30cA75bfd92586e17077590C60eb4cD)); //AUSDC
+        aaveAssetsList.push(address(0x078f358208685046a11C85e8ad32895DED33A249)); // AWBTC
+        aaveAssetsList.push(address(0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8)); // AWETH
+        aaveAssetsList.push(address(0x6ab707Aca953eDAeFBc4fD23bA73294241490620)); // AUSDT
+        aaveAssetsList.push(address(0xf329e36C7bF6E5E86ce2150875a84Ce77f477375)); // AAAVE
+        aaveAssetsList.push(address(0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97)); // AWAVAX
+    }
 
     /**
      * @notice Set Aave assets list to claim reward token.
@@ -155,28 +164,28 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
                 _amount,
                 getPoolValue(_liquidityPoolAddressProviderRegistry, _underlyingToken)
             );
-        if (_depositAmount > 0) {
-            address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
-            _codes = new bytes[](3);
-            _codes[0] = abi.encode(
+        require(_depositAmount > 0, "!amount");
+
+        address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
+        _codes = new bytes[](3);
+        _codes[0] = abi.encode(
+            _underlyingToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
+        );
+        _codes[1] = abi.encode(
+            _underlyingToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _depositAmount)
+        );
+        _codes[2] = abi.encode(
+            _lendingPool,
+            abi.encodeWithSignature(
+                "supply(address,uint256,address,uint16)",
                 _underlyingToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
-            );
-            _codes[1] = abi.encode(
-                _underlyingToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _depositAmount)
-            );
-            _codes[2] = abi.encode(
-                _lendingPool,
-                abi.encodeWithSignature(
-                    "supply(address,uint256,address,uint16)",
-                    _underlyingToken,
-                    _depositAmount,
-                    _vault,
-                    uint16(0)
-                )
-            );
-        }
+                _depositAmount,
+                _vault,
+                uint16(0)
+            )
+        );
     }
 
     /**
@@ -188,24 +197,22 @@ contract AaveAvaV3Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         address _liquidityPoolAddressProviderRegistry,
         uint256 _amount
     ) public view override returns (bytes[] memory _codes) {
-        if (_amount > 0) {
-            address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
-            address _liquidityPoolToken =
-                getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
-            _codes = new bytes[](3);
-            _codes[0] = abi.encode(
-                _liquidityPoolToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
-            );
-            _codes[1] = abi.encode(
-                _liquidityPoolToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _amount)
-            );
-            _codes[2] = abi.encode(
-                _lendingPool,
-                abi.encodeWithSignature("withdraw(address,uint256,address)", _underlyingToken, _amount, _vault)
-            );
-        }
+        require(_amount > 0, "!amount");
+        address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
+        address _liquidityPoolToken = getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
+        _codes = new bytes[](3);
+        _codes[0] = abi.encode(
+            _liquidityPoolToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
+        );
+        _codes[1] = abi.encode(
+            _liquidityPoolToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _amount)
+        );
+        _codes[2] = abi.encode(
+            _lendingPool,
+            abi.encodeWithSignature("withdraw(address,uint256,address)", _underlyingToken, _amount, _vault)
+        );
     }
 
     /**

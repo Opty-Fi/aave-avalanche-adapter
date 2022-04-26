@@ -24,7 +24,7 @@ describe("Aave V2 on Avalanche", function () {
     this.testDeFiAdapter = <TestDeFiAdapter>(
       await hre.waffle.deployContract(this.signers.deployer, testDeFiAdapterArtifact)
     );
-    const aaveAdapterArtifact: Artifact = await hre.artifacts.readArtifact("AaveAvaV2Adapter");
+    const aaveAdapterArtifact: Artifact = await hre.artifacts.readArtifact("AaveV2AvalancheAdapter");
     this.aaveAdapter = <AaveAvaV2Adapter>(
       await hre.waffle.deployContract(this.signers.deployer, aaveAdapterArtifact, [this.mockRegistry.address])
     );

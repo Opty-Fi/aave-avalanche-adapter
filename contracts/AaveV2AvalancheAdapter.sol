@@ -38,7 +38,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
  * @author Opty.fi
  * @dev Abstraction layer to Aave's pools
  */
-contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimitBase {
+contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimitBase {
     using Address for address;
 
     /** @notice Aave's Data provider id */
@@ -130,28 +130,27 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
                 _amount,
                 getPoolValue(_liquidityPoolAddressProviderRegistry, _underlyingToken)
             );
-        if (_depositAmount > 0) {
-            address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
-            _codes = new bytes[](3);
-            _codes[0] = abi.encode(
+        require(_depositAmount > 0, "!amount");
+        address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
+        _codes = new bytes[](3);
+        _codes[0] = abi.encode(
+            _underlyingToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
+        );
+        _codes[1] = abi.encode(
+            _underlyingToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _depositAmount)
+        );
+        _codes[2] = abi.encode(
+            _lendingPool,
+            abi.encodeWithSignature(
+                "deposit(address,uint256,address,uint16)",
                 _underlyingToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
-            );
-            _codes[1] = abi.encode(
-                _underlyingToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _depositAmount)
-            );
-            _codes[2] = abi.encode(
-                _lendingPool,
-                abi.encodeWithSignature(
-                    "deposit(address,uint256,address,uint16)",
-                    _underlyingToken,
-                    _depositAmount,
-                    _vault,
-                    uint16(0)
-                )
-            );
-        }
+                _depositAmount,
+                _vault,
+                uint16(0)
+            )
+        );
     }
 
     /**
@@ -163,24 +162,22 @@ contract AaveAvaV2Adapter is IAdapter, IAdapterHarvestReward, AdapterInvestLimit
         address _liquidityPoolAddressProviderRegistry,
         uint256 _amount
     ) public view override returns (bytes[] memory _codes) {
-        if (_amount > 0) {
-            address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
-            address _liquidityPoolToken =
-                getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
-            _codes = new bytes[](3);
-            _codes[0] = abi.encode(
-                _liquidityPoolToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
-            );
-            _codes[1] = abi.encode(
-                _liquidityPoolToken,
-                abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _amount)
-            );
-            _codes[2] = abi.encode(
-                _lendingPool,
-                abi.encodeWithSignature("withdraw(address,uint256,address)", _underlyingToken, _amount, _vault)
-            );
-        }
+        require(_amount > 0, "!amount");
+        address _lendingPool = _getLendingPool(_liquidityPoolAddressProviderRegistry);
+        address _liquidityPoolToken = getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
+        _codes = new bytes[](3);
+        _codes[0] = abi.encode(
+            _liquidityPoolToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, uint256(0))
+        );
+        _codes[1] = abi.encode(
+            _liquidityPoolToken,
+            abi.encodeWithSignature("approve(address,uint256)", _lendingPool, _amount)
+        );
+        _codes[2] = abi.encode(
+            _lendingPool,
+            abi.encodeWithSignature("withdraw(address,uint256,address)", _underlyingToken, _amount, _vault)
+        );
     }
 
     /**

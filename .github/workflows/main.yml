@@ -62,7 +62,7 @@ jobs:
       - name: Compile
         run: |
           yarn compile
-  ethereum-test:
+  avalanche-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
