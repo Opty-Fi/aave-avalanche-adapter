@@ -114,17 +114,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       );
       checkDepositCode(codes, tokens[0], lendingPool.address, this.testDeFiAdapter.address, amount);
     });
-    it(`11. Should revert when depositing 0 amount`, async function () {
-      await expect(
-        this.testDeFiAdapter.testGetDepositSomeCodes(
-          erc20Contract.address,
-          providerRegistryAddress,
-          this.aaveV3Adapter.address,
-          "0",
-        ),
-      ).to.be.revertedWith("!amount");
-    });
-    it("12. getDepositAllCodes() should return correct code", async function () {
+    it("11. getDepositAllCodes() should return correct code", async function () {
       await setTokenBalanceInStorage(erc20Contract, this.testDeFiAdapter.address, "10");
       const amount = await erc20Contract.balanceOf(this.testDeFiAdapter.address);
       const codes = await this.aaveV3Adapter.getDepositAllCodes(
@@ -134,7 +124,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       );
       checkDepositCode(codes, tokens[0], lendingPool.address, this.testDeFiAdapter.address, amount);
     });
-    it(`13. Deposit 10 ${token.toUpperCase()}`, async function () {
+    it(`12. Deposit 10 ${token.toUpperCase()}`, async function () {
       await setTokenBalanceInStorage(erc20Contract, this.testDeFiAdapter.address, "10");
       const previousBalance = await erc20Contract.balanceOf(this.testDeFiAdapter.address);
       const previousLpTokenBalance = await lpTokenContract.balanceOf(this.testDeFiAdapter.address);
@@ -151,7 +141,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       expect(currentLpTokenBalance).to.gt(previousLpTokenBalance);
       expect(currentBalance).to.lt(previousBalance);
     });
-    it(`14. getLiquidityPoolTokenBalance() should return correct balance after depositing`, async function () {
+    it(`13. getLiquidityPoolTokenBalance() should return correct balance after depositing`, async function () {
       expect(
         await this.aaveV3Adapter.getLiquidityPoolTokenBalance(
           this.testDeFiAdapter.address,
@@ -160,7 +150,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         ),
       ).to.eq(await lpTokenContract.balanceOf(this.testDeFiAdapter.address));
     });
-    it(`15. getAllAmountInToken() should return correct balance after depositing`, async function () {
+    it(`14. getAllAmountInToken() should return correct balance after depositing`, async function () {
       expect(
         await this.aaveV3Adapter.getAllAmountInToken(
           this.testDeFiAdapter.address,
@@ -169,7 +159,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         ),
       ).to.eq(await lpTokenContract.balanceOf(this.testDeFiAdapter.address));
     });
-    it(`16. isRedeemableAmountSufficient() should return true if balanceInToken >= redeemAmount`, async function () {
+    it(`15. isRedeemableAmountSufficient() should return true if balanceInToken >= redeemAmount`, async function () {
       expect(
         await this.aaveV3Adapter.isRedeemableAmountSufficient(
           this.testDeFiAdapter.address,
@@ -179,7 +169,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         ),
       ).to.eq(true);
     });
-    it(`17. Only RiskOperator can execute setMaxDepositProtocolMode from pct to amt and set 2 ${token.toUpperCase()} as the max deposit amount`, async function () {
+    it(`16. Only RiskOperator can execute setMaxDepositProtocolMode from pct to amt and set 2 ${token.toUpperCase()} as the max deposit amount`, async function () {
       await this.aaveV3Adapter.connect(this.signers.riskOperator).setMaxDepositProtocolMode(0);
       expect(await this.aaveV3Adapter.maxDepositProtocolMode()).to.eq(0);
       const amount = hre.ethers.utils.parseUnits("2", decimals);
@@ -197,7 +187,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
           .setMaxDepositAmount(providerRegistryAddress, erc20Contract.address, amount),
       ).to.be.revertedWith("caller is not the riskOperator");
     });
-    it(`18. Cannot deposit over the max deposit amount`, async function () {
+    it(`17. Cannot deposit over the max deposit amount`, async function () {
       await setTokenBalanceInStorage(erc20Contract, this.testDeFiAdapter.address, "4");
       const previousBalance = await erc20Contract.balanceOf(this.testDeFiAdapter.address);
       const previousLpTokenBalance = await lpTokenContract.balanceOf(this.testDeFiAdapter.address);
@@ -215,7 +205,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       expect(currentLpTokenBalance).to.gt(previousLpTokenBalance);
       expect(currentBalance).to.eq(previousBalance.sub(maxAmount));
     });
-    it(`19. Only RiskOperator can execute setMaxDepositProtocolMode from amt to pct and set 0.1% protocol investment limit`, async function () {
+    it(`18. Only RiskOperator can execute setMaxDepositProtocolMode from amt to pct and set 0.1% protocol investment limit`, async function () {
       await this.aaveV3Adapter.connect(this.signers.riskOperator).setMaxDepositPoolPct(providerRegistryAddress, 0);
 
       await this.aaveV3Adapter.connect(this.signers.riskOperator).setMaxDepositProtocolMode(1);
@@ -231,7 +221,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         "caller is not the riskOperator",
       );
     });
-    it(`20. Cannot deposit over 0.1% pool value`, async function () {
+    it(`19. Cannot deposit over 0.1% pool value`, async function () {
       const poolValue = await this.aaveV3Adapter.getPoolValue(providerRegistryAddress, erc20Contract.address);
       const caculatedAmount = poolValue.mul(1).div(1000);
       await setTokenBalanceInStorage(
@@ -258,7 +248,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
 
       await moveToBlockAfterSeconds(hre, 10000);
     });
-    it(`21. Only RiskOperator can set 0.12% pool investment limit`, async function () {
+    it(`20. Only RiskOperator can set 0.12% pool investment limit`, async function () {
       const pct = 12;
       await this.aaveV3Adapter.connect(this.signers.riskOperator).setMaxDepositPoolPct(providerRegistryAddress, pct);
       expect(await this.aaveV3Adapter.maxDepositPoolPct(providerRegistryAddress)).to.eq(pct);
@@ -266,7 +256,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         this.aaveV3Adapter.connect(this.signers.alice).setMaxDepositPoolPct(providerRegistryAddress, pct),
       ).to.be.revertedWith("caller is not the riskOperator");
     });
-    it(`22. Cannot deposit over 0.12% pool value (use maxDepositPoolPct if maxDepositPoolPct > 0)`, async function () {
+    it(`21. Cannot deposit over 0.12% pool value (use maxDepositPoolPct if maxDepositPoolPct > 0)`, async function () {
       const poolValue = await this.aaveV3Adapter.getPoolValue(providerRegistryAddress, erc20Contract.address);
       const caculatedAmount = poolValue.mul(12).div(10000);
       await setTokenBalanceInStorage(
@@ -292,7 +282,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
 
       await moveToBlockAfterSeconds(hre, 10000);
     });
-    it("23. getWithdrawSomeCodes() should return correct code", async function () {
+    it("22. getWithdrawSomeCodes() should return correct code", async function () {
       const amount = hre.ethers.utils.parseUnits("1", decimals);
       const codes = await this.aaveV3Adapter.getWithdrawSomeCodes(
         this.testDeFiAdapter.address,
@@ -302,7 +292,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       );
       checkWithdrawCode(codes, lpToken, tokens[0], lendingPool.address, this.testDeFiAdapter.address, amount);
     });
-    it("24. getWithdrawAllCodes() should return correct code", async function () {
+    it("23. getWithdrawAllCodes() should return correct code", async function () {
       const amount = await this.aaveV3Adapter.getLiquidityPoolTokenBalance(
         this.testDeFiAdapter.address,
         tokens[0],
@@ -315,17 +305,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       );
       checkWithdrawCode(codes, lpToken, tokens[0], lendingPool.address, this.testDeFiAdapter.address, amount);
     });
-    it(`25. Should revert when withdrawing 0 amount`, async function () {
-      await expect(
-        this.testDeFiAdapter.testGetWithdrawSomeCodes(
-          erc20Contract.address,
-          providerRegistryAddress,
-          this.aaveV3Adapter.address,
-          "0",
-        ),
-      ).to.be.revertedWith("!amount");
-    });
-    it(`26. Withdraw all available ${lpTokenSymbol}`, async function () {
+    it(`24. Withdraw all available ${lpTokenSymbol}`, async function () {
       const previousBalance = await erc20Contract.balanceOf(this.testDeFiAdapter.address);
       const previousLpTokenBalance = await lpTokenContract.balanceOf(this.testDeFiAdapter.address);
       await this.testDeFiAdapter.testGetWithdrawAllCodes(
@@ -339,7 +319,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       expect(currentBalance).to.gt(previousBalance);
       await moveToBlockAfterSeconds(hre, 1000000);
     });
-    it(`27. getUnclaimedRewardTokenAmount() should return correct amount`, async function () {
+    it(`25. getUnclaimedRewardTokenAmount() should return correct amount`, async function () {
       expect(
         await incentiveContract.getUserRewards(
           [lpTokenContract.address],
@@ -354,7 +334,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         ),
       );
     });
-    it(`28. getUnclaimedRewardTokensAmount() should return correct amount`, async function () {
+    it(`26. getUnclaimedRewardTokensAmount() should return correct amount`, async function () {
       const expectedResult = await incentiveContract.getAllUserRewards(
         [lpTokenContract.address],
         this.testDeFiAdapter.address,
@@ -363,7 +343,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
       expect(expectedResult[0]).to.eql(result.rewardsList);
       expect(expectedResult[1]).to.eql(result.unclaimedAmounts);
     });
-    it(`29. Claim all reward token`, async function () {
+    it(`27. Claim all reward token`, async function () {
       if ((await incentiveContract.getAssetDecimals(lpTokenContract.address)) > 0) {
         const previousBalance = await rewardTokenContract.balanceOf(this.testDeFiAdapter.address);
 
@@ -374,7 +354,7 @@ export function shouldBeHaveLikeAaveAdapter(token: string, pool: PoolItem): void
         expect(currentBalance).to.gt(previousBalance);
       }
     });
-    it(`30. Harvest all reward token`, async function () {
+    it(`28. Harvest all reward token`, async function () {
       if ((await incentiveContract.getAssetDecimals(lpTokenContract.address)) > 0) {
         if (erc20Contract.address === rewardTokenContract.address) {
           this.skip();
