@@ -326,6 +326,7 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         return _underlyingTokenAmount;
     }
 
+    /* solhint-disable no-unused-vars */
     /**
      * @inheritdoc IAdapter
      */
@@ -352,6 +353,8 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         uint256 _balanceInToken = getAllAmountInToken(_vault, _underlyingToken, _liquidityPoolAddressProviderRegistry);
         return _balanceInToken >= _redeemAmount;
     }
+
+    /* solhint-disable no-unused-vars */
 
     /**
      * @inheritdoc IAdapter

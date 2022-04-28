@@ -267,6 +267,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         return _underlyingTokenAmount;
     }
 
+    /*solhint-disable  no-unused-vars*/
     /**
      * @inheritdoc IAdapter
      */
@@ -278,6 +279,8 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
     ) external pure override returns (uint256) {
         return _redeemAmount;
     }
+
+    /*solhint-enable  no-unused-vars*/
 
     /**
      * @inheritdoc IAdapter
