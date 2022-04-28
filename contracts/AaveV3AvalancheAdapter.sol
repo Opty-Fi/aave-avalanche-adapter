@@ -330,13 +330,15 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function calculateRedeemableLPTokenAmount(
-        address,
+        address payable,
         address,
         address,
         uint256 _redeemAmount
     ) external pure override returns (uint256) {
         return _redeemAmount;
     }
+
+    /* solhint-enable no-unused-vars */
 
     /**
      * @inheritdoc IAdapter

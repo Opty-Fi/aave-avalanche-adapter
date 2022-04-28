@@ -85,7 +85,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function getAllAmountInToken(
-        address _vault,
+        address payable _vault,
         address _underlyingToken,
         address _liquidityPoolAddressProviderRegistry
     ) public view override returns (uint256) {
@@ -96,7 +96,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function getLiquidityPoolTokenBalance(
-        address _vault,
+        address payable _vault,
         address _underlyingToken,
         address _liquidityPoolAddressProviderRegistry
     ) public view override returns (uint256) {
@@ -271,7 +271,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function calculateRedeemableLPTokenAmount(
-        address,
+        address payable,
         address,
         address,
         uint256 _redeemAmount
