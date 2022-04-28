@@ -1,8 +1,8 @@
 import { task, types } from "hardhat/config";
 import { utils } from "ethers";
-import { AaveV2AvalancheAdapter, AaveV2AvalancheAdapter__factory } from "../../typechain";
+import { AaveV3AvalancheAdapter, AaveV3AvalancheAdapter__factory } from "../../typechain";
 
-task("deploy-aavev2.finance-adapter", "Deploy Aave V2 Adapter")
+task("deploy-aavev3.finance-adapter", "Deploy Aave V3 Adapter")
   .addParam("registry", "the address of registry", "", types.string)
   .setAction(async ({ registry }, { ethers }) => {
     if (registry === "") {
@@ -13,10 +13,10 @@ task("deploy-aavev2.finance-adapter", "Deploy Aave V2 Adapter")
       throw new Error("registry address is invalid");
     }
 
-    const AaveAdapterFactory: AaveV2AvalancheAdapter__factory = await ethers.getContractFactory(
-      "AaveV2AvalancheAdapter",
+    const AaveAdapterFactory: AaveV3AvalancheAdapter__factory = await ethers.getContractFactory(
+      "AaveV3AvalancheAdapter",
     );
-    const AaveAdapter: AaveV2AvalancheAdapter = <AaveV2AvalancheAdapter>await AaveAdapterFactory.deploy(registry);
+    const AaveAdapter: AaveV3AvalancheAdapter = <AaveV3AvalancheAdapter>await AaveAdapterFactory.deploy(registry);
     await AaveAdapter.deployed();
     console.log("AaveAdapter deployed to: ", AaveAdapter.address);
   });

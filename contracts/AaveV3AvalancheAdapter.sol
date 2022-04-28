@@ -414,12 +414,6 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
                 .getAddressesProvidersList()[0];
     }
 
-    function _getProtocolDataProvider(address _liquidityPoolAddressProviderRegistry) internal view returns (address) {
-        return
-            IAaveV3LendingPoolAddressesProvider(_getLendingPoolAddressProvider(_liquidityPoolAddressProviderRegistry))
-                .getAddress(PROTOCOL_DATA_PROVIDER_ID);
-    }
-
     /**
      * @dev Get the codes for harvesting the tokens using quickswap like routers-i.e. swapping back into the underlying
      * @param _vault Vault contract address
