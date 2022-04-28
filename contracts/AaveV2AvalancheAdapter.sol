@@ -1,4 +1,3 @@
-// solhint-disable no-unused-vars
 // SPDX-License-Identifier:MIT
 
 pragma solidity =0.8.11;
@@ -59,6 +58,8 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
     /* solhint-disable no-empty-blocks */
     constructor(address _registry) AdapterModifiersBase(_registry) {}
 
+    /* solhint-enable no-empty-blocks */
+
     /**
      * @inheritdoc IAdapter
      */
@@ -84,7 +85,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function getAllAmountInToken(
-        address payable _vault,
+        address _vault,
         address _underlyingToken,
         address _liquidityPoolAddressProviderRegistry
     ) public view override returns (uint256) {
@@ -95,7 +96,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function getLiquidityPoolTokenBalance(
-        address payable _vault,
+        address _vault,
         address _underlyingToken,
         address _liquidityPoolAddressProviderRegistry
     ) public view override returns (uint256) {
@@ -270,7 +271,7 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function calculateRedeemableLPTokenAmount(
-        address payable,
+        address,
         address,
         address,
         uint256 _redeemAmount
@@ -326,6 +327,8 @@ contract AaveV2AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         override
         returns (bytes[] memory _codes)
     {}
+
+    /*solhint-enable  no-empty-blocks*/
 
     /**
      * @inheritdoc IAdapterHarvestReward

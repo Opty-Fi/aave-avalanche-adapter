@@ -1,4 +1,3 @@
-// solhint-disable no-unused-vars
 // SPDX-License-Identifier:MIT
 
 pragma solidity =0.8.11;
@@ -69,6 +68,8 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         aaveAssetsList.push(address(0xf329e36C7bF6E5E86ce2150875a84Ce77f477375)); // AAAVE
         aaveAssetsList.push(address(0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97)); // AWAVAX
     }
+
+    /* solhint-enable no-empty-blocks */
 
     /**
      * @notice Set Aave assets list to claim reward token.
@@ -329,7 +330,7 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      * @inheritdoc IAdapter
      */
     function calculateRedeemableLPTokenAmount(
-        address payable,
+        address,
         address,
         address,
         uint256 _redeemAmount
@@ -385,6 +386,8 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         override
         returns (bytes[] memory _codes)
     {}
+
+    /*solhint-enable  no-empty-blocks*/
 
     /**
      * @inheritdoc IAdapterHarvestReward
