@@ -57,7 +57,6 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      */
     address[] public aaveAssetsList;
 
-    /* solhint-disable no-empty-blocks */
     constructor(address _registry) AdapterModifiersBase(_registry) {
         aaveAssetsList.push(address(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE)); //ADai
         aaveAssetsList.push(address(0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530)); //ALINK
@@ -68,8 +67,6 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
         aaveAssetsList.push(address(0xf329e36C7bF6E5E86ce2150875a84Ce77f477375)); // AAAVE
         aaveAssetsList.push(address(0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97)); // AWAVAX
     }
-
-    /* solhint-enable no-empty-blocks */
 
     /**
      * @notice Set Aave assets list to claim reward token.
