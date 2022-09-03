@@ -12,6 +12,8 @@ import { AdapterModifiersBase } from "./utils/AdapterModifiersBase.sol";
 import "./utils/AdapterInvestLimitBase.sol";
 
 //  interfaces
+import { IVault } from "./utils/interfaces/IVault.sol";
+
 import {
     IAaveV3LendingPoolAddressesProvider
 } from "@optyfi/defi-legos/avalanche/aavev3/contracts/IAaveV3LendingPoolAddressesProvider.sol";
@@ -52,41 +54,8 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
     /**@notice incentivesController*/
     address public constant incentivesController = address(0x929EC64c34a17401F460460D4B9390518E5B473e);
 
-    /**
-     * @notice the A tokens list that is used for claiming reward token
-     */
-    address[] public aaveAssetsList;
-
-    constructor(address _registry) AdapterModifiersBase(_registry) {
-        aaveAssetsList.push(address(0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE)); //ADai
-        aaveAssetsList.push(address(0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530)); //ALINK
-        aaveAssetsList.push(address(0x625E7708f30cA75bfd92586e17077590C60eb4cD)); //AUSDC
-        aaveAssetsList.push(address(0x078f358208685046a11C85e8ad32895DED33A249)); // AWBTC
-        aaveAssetsList.push(address(0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8)); // AWETH
-        aaveAssetsList.push(address(0x6ab707Aca953eDAeFBc4fD23bA73294241490620)); // AUSDT
-        aaveAssetsList.push(address(0xf329e36C7bF6E5E86ce2150875a84Ce77f477375)); // AAAVE
-        aaveAssetsList.push(address(0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97)); // AWAVAX
-    }
-
-    /**
-     * @notice Set Aave assets list to claim reward token.
-     * @param _assets the list of assets
-     */
-    function setAaveAssetsList(address[] memory _assets) external onlyOperator {
-        delete aaveAssetsList;
-        for (uint256 _i; _i < _assets.length; _i++) {
-            aaveAssetsList.push(_assets[_i]);
-        }
-    }
-
-    /**
-     * @dev AaveV3 allows user to get mutiple reward tokens
-     * @notice Returns reward tokens list for the liquidity pool provided
-     * @return Returns the reward tokens list
-     */
-    function getRewardTokens() public view returns (address[] memory) {
-        return IAaveV3RewardsController(incentivesController).getRewardsList();
-    }
+    /* solhint-disable no-empty-blocks */
+    constructor(address _registry) AdapterModifiersBase(_registry) {}
 
     /**
      * @inheritdoc IAdapter
@@ -233,34 +202,15 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
      */
     function getUnclaimedRewardTokenAmount(
         address payable _vault,
-        address,
-        address
+        address _liquidityPoolAddressProviderRegistry,
+        address _underlyingToken
     ) public view override returns (uint256 _amount) {
-        if (aaveAssetsList.length > 0) {
-            return (
-                IAaveV3RewardsController(incentivesController).getUserRewards(
-                    aaveAssetsList,
-                    _vault,
-                    getRewardToken(address(0))
-                )
-            );
-        }
-    }
+        address[] memory _assets = new address[](1);
+        _assets[0] = getLiquidityPoolToken(_underlyingToken, _liquidityPoolAddressProviderRegistry);
 
-    /**
-     * @notice Get unclaimed reward token amounts
-     * @param _vault the address of vault
-     * @return rewardsList the list of reward tokens
-     * @return unclaimedAmounts the list of unclaimed amounts
-     */
-    function getUnclaimedRewardTokensAmount(address payable _vault)
-        public
-        view
-        returns (address[] memory rewardsList, uint256[] memory unclaimedAmounts)
-    {
-        if (aaveAssetsList.length > 0) {
-            return (IAaveV3RewardsController(incentivesController).getAllUserRewards(aaveAssetsList, _vault));
-        }
+        return (
+            IAaveV3RewardsController(incentivesController).getUserRewards(_assets, _vault, getRewardToken(address(0)))
+        );
     }
 
     /**
@@ -363,19 +313,20 @@ contract AaveV3AvalancheAdapter is IAdapter, IAdapterHarvestReward, AdapterInves
     /**
      * @inheritdoc IAdapterHarvestReward
      */
-    function getClaimRewardTokenCode(address payable _vault, address)
+    function getClaimRewardTokenCode(address payable _vault, address _liquidityPoolAddressProviderRegistry)
         external
         view
         override
         returns (bytes[] memory _codes)
     {
-        if (aaveAssetsList.length > 0) {
-            _codes = new bytes[](1);
-            _codes[0] = abi.encode(
-                incentivesController,
-                abi.encodeWithSignature("claimAllRewards(address[],address)", aaveAssetsList, _vault)
-            );
-        }
+        address underlyingToken = IVault(_vault).underlyingToken();
+        address[] memory _assets = new address[](1);
+        _assets[0] = getLiquidityPoolToken(underlyingToken, _liquidityPoolAddressProviderRegistry);
+        _codes = new bytes[](1);
+        _codes[0] = abi.encode(
+            incentivesController,
+            abi.encodeWithSignature("claimAllRewards(address[],address)", _assets, _vault)
+        );
     }
 
     /*solhint-disable  no-empty-blocks*/

@@ -2,12 +2,17 @@ import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import AaveAdapterParticulars from "@optyfi/defi-legos/avalanche/aavev2";
-import { AaveV2AvalancheAdapter, TestDeFiAdapter } from "../typechain";
+import AaveV3AdapterParticulars from "@optyfi/defi-legos/avalanche/aavev3";
+
+import { AaveV2AvalancheAdapter, AaveV3AvalancheAdapter, TestDeFiAdapter } from "../typechain";
 import { LiquidityPool, PoolItem, Signers } from "./types";
 import { shouldBeHaveLikeAaveAdapter } from "./AaveV2Adapter.behavior";
-const { pools }: { pools: LiquidityPool } = AaveAdapterParticulars;
+import { shouldBeHaveLikeAaveV3Adapter } from "./AaveV3Adapter.behavior";
 
-describe("Aave V2 on Avalanche", function () {
+const { pools }: { pools: LiquidityPool } = AaveAdapterParticulars;
+const { pools: poolsV3 }: { pools: LiquidityPool } = AaveV3AdapterParticulars;
+
+describe("Aave on Avalanche", function () {
   before(async function () {
     this.signers = {} as Signers;
     const signers: SignerWithAddress[] = await hre.ethers.getSigners();
@@ -28,9 +33,22 @@ describe("Aave V2 on Avalanche", function () {
     this.aaveAdapter = <AaveV2AvalancheAdapter>(
       await hre.waffle.deployContract(this.signers.deployer, aaveAdapterArtifact, [this.mockRegistry.address])
     );
+    const aaveV3AdapterArtifact: Artifact = await hre.artifacts.readArtifact("AaveV3AvalancheAdapter");
+    this.aaveV3Adapter = <AaveV3AvalancheAdapter>(
+      await hre.waffle.deployContract(this.signers.deployer, aaveV3AdapterArtifact, [this.mockRegistry.address])
+    );
   });
-  Object.keys(pools).map((token: string) => {
-    const poolItem: PoolItem = pools[token];
-    shouldBeHaveLikeAaveAdapter(token, poolItem);
+  describe("Aave V2 on Avalanche", function () {
+    Object.keys(pools).map((token: string) => {
+      const poolItem: PoolItem = pools[token];
+      shouldBeHaveLikeAaveAdapter(token, poolItem);
+    });
+  });
+
+  describe("Aave V3 on Avalanche", function () {
+    Object.keys(poolsV3).map((token: string) => {
+      const poolItem: PoolItem = poolsV3[token];
+      shouldBeHaveLikeAaveV3Adapter(token, poolItem);
+    });
   });
 });
